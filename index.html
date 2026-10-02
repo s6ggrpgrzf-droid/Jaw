@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>JAW — Classic Western Theater</title>
+<title>Six-Shooter Cinema — Classic Western Theater</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rye&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,9 +38,9 @@
   .kicker{font-size:11px; letter-spacing:5px; color:var(--amber); text-transform:uppercase; margin-bottom:10px; font-weight:700;}
   h1.brand{
     margin:0; font-family:"Rye",Georgia,serif; font-weight:400;
-    font-size:clamp(46px,9vw,80px); letter-spacing:10px; color:var(--amber2);
+    font-size:clamp(28px,5.5vw,58px); letter-spacing:3px; color:var(--amber2);
     text-shadow:0 3px 30px rgba(232,163,61,.35), 0 2px 0 rgba(0,0,0,.6);
-    padding-left:10px;
+    padding-left:3px;
   }
   .tagline{font-family:Georgia,serif; font-style:italic; color:var(--muted); margin-top:8px; font-size:15px;}
   .stats{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;}
@@ -158,7 +158,18 @@
   .btn:hover{transform:translateY(-1px);}
   .btn.amber{background:linear-gradient(180deg,var(--amber2),var(--amber)); color:#1c1206;}
   .btn.ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.2); margin-left:10px;}
-  .nowplaying{padding:16px 20px; border-top:1px solid rgba(255,255,255,.08); background:var(--bg2);}
+  .nowplaying{padding:16px 20px; border-top:1px solid rgba(255,255,255,.08); background:var(--bg2); position:relative;}
+  .audio-pop{
+    position:absolute; left:16px; right:16px; bottom:calc(100% - 8px); z-index:20;
+    background:#221a12; border:1px solid rgba(232,163,61,.4); border-radius:14px;
+    padding:16px 18px; box-shadow:0 20px 50px rgba(0,0,0,.65);
+    animation:fadein .2s;
+  }
+  .audio-pop .ap-title{font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--amber); font-weight:800; margin-bottom:10px;}
+  .ap-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid rgba(255,255,255,.07);}
+  .ap-row span b{display:block; font-size:14px;}
+  .ap-row span i{display:block; font-style:normal; font-size:12px; color:var(--muted); margin-top:2px;}
+  .ap-note{font-size:11.5px; color:var(--muted); margin-top:8px;}
   .nowplaying .ep{font-size:11px; letter-spacing:3px; color:var(--amber); text-transform:uppercase; font-weight:700;}
   .nowplaying .title{font-family:Georgia,serif; font-size:22px; margin-top:5px;}
   .np-controls{display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap;}
@@ -215,7 +226,7 @@
 
 <header class="hero">
   <div class="kicker">Classic Western Theater</div>
-  <h1 class="brand">JAW</h1>
+  <h1 class="brand">SIX-SHOOTER CINEMA</h1>
   <div class="tagline" id="tagline">Five classic series. 387 episodes. Free forever.</div>
   <div class="stats">
     <div class="stat"><b id="statEps">…</b> episodes</div>
@@ -271,6 +282,7 @@
             <div class="np-controls">
               <button class="chip-btn" id="btnShuffle" title="Play a random episode">🎲 Surprise me</button>
               <button class="chip-btn" id="btnPip" title="Picture in picture">⧉ Pop-out</button>
+              <button class="chip-btn" id="btnAudio" title="Audio enhancements">🔊 Audio</button>
               <button class="chip-btn" id="btnTheater" title="Widen the player">🖥 Theater</button>
               <select class="ctl" id="selSpeed" title="Playback speed">
                 <option value="0.5">0.5×</option><option value="0.75">0.75×</option>
@@ -291,6 +303,22 @@
             </div>
             <div class="kbd-hint">
               <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> seek 10s · <kbd>F</kbd> fullscreen · <kbd>N</kbd> next · <kbd>M</kbd> mute
+            </div>
+            <div class="audio-pop" id="audioPop" hidden>
+              <div class="ap-title">Audio enhancements</div>
+              <div class="ap-row">
+                <span><b>Wide sound</b><i>Spreads the flat old mono into a bigger stereo image</i></span>
+                <label class="switch" id="swWide"><span class="tk"></span></label>
+              </div>
+              <div class="ap-row">
+                <span><b>Dialogue+</b><i>Lifts voices out of muffled old mixes</i></span>
+                <label class="switch" id="swDialog"><span class="tk"></span></label>
+              </div>
+              <div class="ap-row">
+                <span><b>Night mode</b><i>Keeps gunfights from blasting you mid-episode</i></span>
+                <label class="switch" id="swNight"><span class="tk"></span></label>
+              </div>
+              <div class="ap-note">Processed live in your browser — works with headphones or speakers.</div>
             </div>
           </div>
         </div>
