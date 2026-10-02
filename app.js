@@ -58,6 +58,66 @@
     saveStore(); renderStats();
   }
 
+  /* ---------- audio enhancements (Web Audio) ---------- */
+  var LS_AUDIO = "jaw-audio-v1";
+  var audio = { wide: false, dialog: false, night: false };
+  var AC = null, aN = null;
+  try { var _a = JSON.parse(localStorage.getItem(LS_AUDIO) || "null"); if (_a) audio = _a; } catch (e) {}
+  function saveAudio() { try { localStorage.setItem(LS_AUDIO, JSON.stringify(audio)); } catch (e) {} }
+
+  // Chain: source -> highpass -> presence peak -> dry/wet widener -> compressor -> out.
+  // Neutral parameter values make each stage transparent, so bypassing is click-free.
+  function ensureAudio() {
+    if (AC) { if (AC.state === "suspended") AC.resume(); return true; }
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return false;
+      AC = new Ctx();
+      var src = AC.createMediaElementSource(player);
+      var hp = AC.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 10;
+      var pres = AC.createBiquadFilter(); pres.type = "peaking";
+      pres.frequency.value = 3000; pres.Q.value = 0.9; pres.gain.value = 0;
+      var merge = AC.createChannelMerger(2);
+      var gDry = AC.createGain();
+      var dly = AC.createDelay(0.05); dly.delayTime.value = 0;
+      var gWet = AC.createGain(); gWet.gain.value = 0;
+      var comp = AC.createDynamicsCompressor();
+      comp.threshold.value = 0; comp.knee.value = 0; comp.ratio.value = 1;
+      comp.attack.value = 0.003; comp.release.value = 0.25;
+      src.connect(hp); hp.connect(pres);
+      pres.connect(gDry); gDry.connect(merge, 0, 0); gDry.connect(merge, 0, 1);
+      pres.connect(dly); dly.connect(gWet); gWet.connect(merge, 0, 1);
+      merge.connect(comp); comp.connect(AC.destination);
+      aN = { hp: hp, pres: pres, dly: dly, gWet: gWet, comp: comp };
+      if (AC.state === "suspended") AC.resume();
+      applyAudio();
+      return true;
+    } catch (e) { AC = null; return false; }
+  }
+  function applyAudio() {
+    if (!aN) return;
+    // wide: Haas effect — 18ms delayed copy folded into the right channel
+    aN.dly.delayTime.value = audio.wide ? 0.018 : 0;
+    aN.gWet.gain.value = audio.wide ? 0.85 : 0;
+    // dialogue+: rumble cut + presence lift
+    aN.hp.frequency.value = audio.dialog ? 90 : 10;
+    aN.pres.gain.value = audio.dialog ? 5 : 0;
+    // night: gentle leveling compressor
+    var c = aN.comp;
+    if (audio.night) {
+      c.threshold.value = -24; c.knee.value = 6; c.ratio.value = 10;
+      c.attack.value = 0.004; c.release.value = 0.3;
+    } else {
+      c.threshold.value = 0; c.knee.value = 0; c.ratio.value = 1;
+      c.attack.value = 0.003; c.release.value = 0.25;
+    }
+  }
+  function paintAudioSwitches() {
+    $("swWide").classList.toggle("on", audio.wide);
+    $("swDialog").classList.toggle("on", audio.dialog);
+    $("swNight").classList.toggle("on", audio.night);
+  }
+
   /* ---------- helpers ---------- */
   function epKey(ep) { return ep.s != null ? "s" + ep.s + "e" + ep.e : "n" + ep.n; }
   function epNum(ep) { return ep.s != null ? ep.e : ep.n; }
@@ -280,6 +340,7 @@
   }
   function play(ep, resumeAt) {
     cancelUpNext();
+    if (AC && AC.state === "suspended") AC.resume();
     var sid = currentShow.meta.sid, k = epKey(ep);
     currentKey = k;
     player.src = fileUrl(currentShow.meta, ep);
@@ -393,6 +454,34 @@
     var on = document.body.classList.toggle("theater");
     $("btnTheater").classList.toggle("on", on);
   };
+
+  /* audio panel */
+  paintAudioSwitches();
+  $("btnAudio").onclick = function (e) {
+    e.stopPropagation();
+    if (!ensureAudio()) { toast("Audio enhancements aren't supported in this browser"); return; }
+    var pop = $("audioPop");
+    pop.hidden = !pop.hidden;
+    $("btnAudio").classList.toggle("on", !pop.hidden);
+  };
+  document.addEventListener("click", function (e) {
+    var pop = $("audioPop");
+    if (!pop.hidden && !e.target.closest(".audio-pop") && !e.target.closest("#btnAudio")) {
+      pop.hidden = true; $("btnAudio").classList.remove("on");
+    }
+  });
+  function audioToggle(key, id, label) {
+    $(id).onclick = function (e) {
+      e.stopPropagation();
+      if (!ensureAudio()) { toast("Audio enhancements aren't supported in this browser"); return; }
+      audio[key] = !audio[key];
+      saveAudio(); applyAudio(); paintAudioSwitches();
+      toast(label + (audio[key] ? " on" : " off"));
+    };
+  }
+  audioToggle("wide", "swWide", "Wide sound");
+  audioToggle("dialog", "swDialog", "Dialogue+");
+  audioToggle("night", "swNight", "Night mode");
   selSpeed.onchange = function () { player.playbackRate = parseFloat(selSpeed.value) || 1; };
   function setAutoplay(on) {
     store.autoplay = on; saveStore();
