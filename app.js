@@ -359,6 +359,7 @@
   }
   function play(ep, resumeAt) {
     cancelUpNext();
+    $("vidError").hidden = true;
     if (AC && AC.state === "suspended") AC.resume();
     var sid = currentShow.meta.sid, k = epKey(ep);
     currentKey = k;
@@ -461,6 +462,17 @@
       store.progress[sid] = p; saveStore();
     }
   });
+  player.addEventListener("error", function () {
+    if (player.src) $("vidError").hidden = false;
+  });
+  $("veRetry").onclick = function () {
+    $("vidError").hidden = true;
+    if (currentShow && currentKey) {
+      for (var i = 0; i < currentShow.episodes.length; i++) {
+        if (epKey(currentShow.episodes[i]) === currentKey) { play(currentShow.episodes[i]); break; }
+      }
+    }
+  };
   player.addEventListener("ended", function () {
     if (currentShow && currentKey) {
       markWatched(currentShow.meta.sid, currentKey);
