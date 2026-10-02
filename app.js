@@ -61,7 +61,7 @@
   /* ---------- audio enhancements (Web Audio) ---------- */
   var LS_AUDIO = "jaw-audio-v1";
   var audio = { wide: false, dialog: false, night: false };
-  var AC = null, aN = null;
+  var AC = null, aN = null, lastPlayPromise = null;
   try { var _a = JSON.parse(localStorage.getItem(LS_AUDIO) || "null"); if (_a) audio = _a; } catch (e) {}
   function saveAudio() { try { localStorage.setItem(LS_AUDIO, JSON.stringify(audio)); } catch (e) {} }
 
@@ -363,7 +363,10 @@
     var sid = currentShow.meta.sid, k = epKey(ep);
     currentKey = k;
     player.src = fileUrl(currentShow.meta, ep);
-    player.play().catch(function () {});
+    var pr = null;
+    try { pr = player.play(); } catch (e) {}
+    if (pr && pr.catch) pr.catch(function () {});
+    lastPlayPromise = pr;
     npEp.textContent = currentShow.meta.title + " · " + epSeasonLabel(ep);
     npTitle.textContent = ep.t;
     if (resumeAt) {
@@ -399,9 +402,24 @@
       unTimer = setInterval(function () {
         remain -= 1;
         unBar.style.width = (remain / UP_NEXT_SECS * 100) + "%";
-        if (remain <= 0) { cancelUpNext(); play(nx); }
+        if (remain <= 0) { cancelUpNext(); autoPlayNext(nx); }
       }, 1000);
     });
+    $("unPlay").onclick = function () { cancelUpNext(); play(nx); };
+    $("unCancel").onclick = cancelUpNext;
+  }
+  // Auto-advance isn't in a tap gesture, so iOS may block it. If blocked,
+  // park the Up Next card on screen so a single tap resumes playback.
+  function autoPlayNext(nx) {
+    play(nx);
+    var pr = lastPlayPromise;
+    if (pr && pr.catch) pr.catch(function () { showUpNextBlocked(nx); });
+  }
+  function showUpNextBlocked(nx) {
+    unTitle.textContent = nx.t;
+    unSub.textContent = currentShow.meta.title + " · " + epSeasonLabel(nx) + " — tap Play now to start";
+    upnext.classList.add("show");
+    unBar.style.transition = "none"; unBar.style.width = "100%";
     $("unPlay").onclick = function () { cancelUpNext(); play(nx); };
     $("unCancel").onclick = cancelUpNext;
   }
