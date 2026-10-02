@@ -122,8 +122,9 @@
   function epKey(ep) { return ep.s != null ? "s" + ep.s + "e" + ep.e : "n" + ep.n; }
   function epNum(ep) { return ep.s != null ? ep.e : ep.n; }
   function epSeasonLabel(ep) { return ep.s != null ? "S" + ep.s + " · E" + ep.e : "Episode " + ep.n; }
+  var IA_PROXY = "https://sixshooter-cors-proxy.chaoticutopia84.workers.dev";
   function fileUrl(meta, ep) {
-    return "https://archive.org/download/" + meta.archive + "/" + encodeURIComponent(ep.f);
+    return IA_PROXY + "/download/" + meta.archive + "/" + encodeURIComponent(ep.f);
   }
   function fmtTime(s) {
     s = Math.floor(s || 0);
