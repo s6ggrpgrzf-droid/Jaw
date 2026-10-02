@@ -176,7 +176,7 @@
       '<div class="bd"><div class="t"></div><div class="m">' + epSeasonLabel(ep) + "</div>" +
       (pct > 0 ? '<div class="p"><i style="width:' + Math.round(pct) + '%"></i></div>' : "") + "</div>";
     card.querySelector(".t").textContent = ep.t;
-    card.onclick = function () { location.hash = "#/" + meta.sid; playOnShow(meta.sid, ep); };
+    card.onclick = function () { openShowAndPlay(meta.sid, ep); };
     return card;
   }
 
@@ -200,7 +200,7 @@
           var ep = sh.episodes.filter(function (e) { return epKey(e) === it.k; })[0];
           if (!ep) return;
           var card = epCard(it.meta, ep, 0);
-          card.onclick = function () { location.hash = "#/" + it.sid; playOnShow(it.sid, ep, it.t); };
+          card.onclick = function () { openShowAndPlay(it.sid, ep, it.t); };
           rail.appendChild(card);
         });
       });
@@ -246,8 +246,28 @@
 
   function renderShow() {
     var sid = route.sid;
-    loadShow(sid, function (sh) {
-      var meta = sh.meta, eps = sh.episodes;
+    loadShow(sid, function (sh) { renderShowView(sh); });
+  }
+
+  // Open a show and optionally start an episode — all synchronously so the
+  // video.play() call stays inside the user's tap gesture (iOS requirement).
+  // Show catalogs are preloaded at startup, so this never needs to wait.
+  function openShowAndPlay(sid, ep, resumeAt) {
+    var sh = showCache[sid];
+    if (!sh) { location.hash = "#/" + sid; if (ep) playOnShow(sid, ep, resumeAt); return; }
+    // Render + play synchronously inside the tap gesture (iOS blocks delayed play()).
+    // The hashchange that follows re-renders the same view idempotently.
+    route = { view: "show", sid: sid };
+    $("view-home").hidden = true;
+    $("view-show").hidden = false;
+    renderShowView(sh);
+    window.scrollTo(0, 0);
+    if (location.hash !== "#/" + sid) location.hash = "#/" + sid;
+    if (ep) play(ep, resumeAt);
+  }
+
+  function renderShowView(sh) {
+      var meta = sh.meta, eps = sh.episodes, sid = meta.sid;
       currentShow = sh;
       document.documentElement.style.setProperty("--ac", meta.accent);
       $("shTitle").textContent = meta.title;
@@ -259,7 +279,6 @@
       try { saved = JSON.parse(localStorage.getItem(LS_SEASON) || "{}"); } catch (e) {}
       activeSeason = (saved && saved[sid]) || seasonsOf(eps)[0];
       renderPills(); renderList(); renderShowContinue();
-    });
   }
 
   function renderPills() {
@@ -459,7 +478,6 @@
   paintAudioSwitches();
   $("btnAudio").onclick = function (e) {
     e.stopPropagation();
-    if (!ensureAudio()) { toast("Audio enhancements aren't supported in this browser"); return; }
     var pop = $("audioPop");
     pop.hidden = !pop.hidden;
     $("btnAudio").classList.toggle("on", !pop.hidden);
@@ -473,10 +491,13 @@
   function audioToggle(key, id, label) {
     $(id).onclick = function (e) {
       e.stopPropagation();
-      if (!ensureAudio()) { toast("Audio enhancements aren't supported in this browser"); return; }
-      audio[key] = !audio[key];
+      var turningOn = !audio[key];
+      // Only route audio through the Web Audio graph once a mode is enabled;
+      // otherwise the video element plays untouched.
+      if (turningOn && !ensureAudio()) { toast("Audio enhancements aren't supported in this browser"); return; }
+      audio[key] = turningOn;
       saveAudio(); applyAudio(); paintAudioSwitches();
-      toast(label + (audio[key] ? " on" : " off"));
+      toast(label + (turningOn ? " on" : " off"));
     };
   }
   audioToggle("wide", "swWide", "Wide sound");
@@ -555,8 +576,7 @@
         it.onclick = function () {
           searchResults.classList.remove("show");
           searchInput.value = "";
-          location.hash = "#/" + g.meta.sid;
-          playOnShow(g.meta.sid, ep);
+          openShowAndPlay(g.meta.sid, ep);
         };
         searchResults.appendChild(it);
       });
@@ -591,6 +611,8 @@
       catalog = c;
       renderStats();
       render();
+      // Preload every show's episodes: home taps then play inside the tap gesture (iOS blocks delayed play()).
+      catalog.forEach(function (s) { loadShow(s.sid, function () {}); });
     })
     .catch(function () { toast("Couldn't load the catalog — check your connection."); });
 })();
