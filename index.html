@@ -4,155 +4,259 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Wagon Train — Classic Western Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0e0b08; --bg2:#161210; --card:#1c1712; --line:rgba(232,163,61,.16);
-    --amber:#e8a33d; --amber2:#f5c86e; --text:#f2e9d8; --muted:#a89880;
-    --red:#b3402e;
+    --bg:#0d0a07; --bg2:#14100c; --card:#1b1510; --card2:#221a13;
+    --line:rgba(232,163,61,.16); --line2:rgba(232,163,61,.32);
+    --amber:#e8a33d; --amber2:#f5c86e; --text:#f4ecdc; --muted:#ab9a82;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     min-height:100vh;
   }
+  /* ---------- hero ---------- */
   header.hero{
-    padding:34px 20px 22px; text-align:center;
+    position:relative; overflow:hidden; text-align:center;
+    padding:52px 20px 30px; border-bottom:1px solid var(--line);
     background:
-      radial-gradient(1200px 300px at 50% -60px, rgba(232,163,61,.16), transparent 70%),
-      linear-gradient(180deg,#171009 0%, var(--bg) 100%);
-    border-bottom:1px solid var(--line);
+      radial-gradient(900px 340px at 50% -80px, rgba(232,163,61,.20), transparent 70%),
+      radial-gradient(700px 500px at 85% 120%, rgba(179,64,46,.10), transparent 60%),
+      linear-gradient(180deg,#1a1208 0%, var(--bg) 100%);
   }
-  .kicker{
-    font-size:11px; letter-spacing:4px; color:var(--amber);
-    text-transform:uppercase; margin-bottom:10px;
+  header.hero::after{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:26px 26px;
+    mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
   }
+  .kicker{font-size:11px; letter-spacing:5px; color:var(--amber); text-transform:uppercase; margin-bottom:12px; font-weight:700;}
   h1{
-    margin:0; font-family:Georgia,"Times New Roman",serif;
-    font-size:clamp(34px,7vw,58px); letter-spacing:3px; color:var(--amber2);
-    text-shadow:0 2px 24px rgba(232,163,61,.25);
+    margin:0; font-family:"Rye",Georgia,serif; font-weight:400;
+    font-size:clamp(40px,8vw,72px); letter-spacing:4px; color:var(--amber2);
+    text-shadow:0 3px 30px rgba(232,163,61,.35), 0 2px 0 rgba(0,0,0,.6);
   }
-  .sub{color:var(--muted); font-size:14px; margin-top:8px;}
-  .sub b{color:var(--text);}
+  .tagline{font-family:Georgia,serif; font-style:italic; color:var(--muted); margin-top:10px; font-size:15px;}
+  .stats{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .stat{
+    background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:999px;
+    padding:7px 16px; font-size:13px; color:var(--muted); font-weight:600;
+  }
+  .stat b{color:var(--amber2);}
+  .watchbar{max-width:420px; margin:14px auto 0;}
+  .watchbar .lbl{font-size:12px; color:var(--muted); margin-bottom:6px; letter-spacing:1px;}
+  .watchbar .track{height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden;}
+  .watchbar .fill{height:100%; width:0; background:linear-gradient(90deg,var(--amber),var(--amber2)); border-radius:3px; transition:width .5s;}
 
-  .searchbar{
-    max-width:560px; margin:18px auto 0; position:relative;
-  }
+  .searchbar{max-width:560px; margin:20px auto 0; position:relative; z-index:1;}
   .searchbar input{
-    width:100%; padding:13px 16px 13px 42px; font-size:15px;
-    background:var(--card); border:1px solid var(--line); border-radius:999px;
-    color:var(--text); outline:none;
+    width:100%; padding:14px 18px 14px 46px; font-size:15px;
+    background:rgba(0,0,0,.45); border:1px solid var(--line2); border-radius:999px;
+    color:var(--text); outline:none; backdrop-filter:blur(6px);
   }
-  .searchbar input:focus{border-color:var(--amber);}
-  .searchbar svg{position:absolute; left:15px; top:50%; transform:translateY(-50%); opacity:.55;}
+  .searchbar input:focus{border-color:var(--amber); box-shadow:0 0 0 3px rgba(232,163,61,.15);}
+  .searchbar svg{position:absolute; left:17px; top:50%; transform:translateY(-50%); opacity:.6;}
 
-  main{max-width:1200px; margin:0 auto; padding:22px 16px 60px;}
-  .layout{display:grid; grid-template-columns:1.9fr 1fr; gap:20px; align-items:start;}
-  @media (max-width:900px){ .layout{grid-template-columns:1fr;} }
+  /* ---------- layout ---------- */
+  main{max-width:1240px; margin:0 auto; padding:26px 16px 60px;}
+  .layout{display:grid; grid-template-columns:1.9fr 1fr; gap:22px; align-items:start;}
+  @media (max-width:920px){ .layout{grid-template-columns:1fr;} }
 
   .player-wrap{
-    background:#000; border:1px solid var(--line); border-radius:14px; overflow:hidden;
-    box-shadow:0 18px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.6);
+    position:relative; background:#000; border:1px solid var(--line2); border-radius:16px; overflow:hidden;
+    box-shadow:0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(232,163,61,.06);
   }
   video{width:100%; aspect-ratio:16/9; display:block; background:#000;}
-  .nowplaying{padding:14px 18px; border-top:1px solid var(--line); background:var(--bg2);}
-  .nowplaying .ep{font-size:12px; letter-spacing:2px; color:var(--amber); text-transform:uppercase;}
-  .nowplaying .title{font-family:Georgia,serif; font-size:21px; margin-top:4px;}
-  .nowplaying .hint{color:var(--muted); font-size:13px; margin-top:6px;}
 
-  .continue{margin-bottom:20px; display:none;}
-  .continue h3, .seasons h3{
-    font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--amber); margin:0 0 10px;
+  .upnext{
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(5,3,2,.82); backdrop-filter:blur(4px); z-index:5; text-align:center; padding:20px;
   }
-  .cw-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px;}
+  .upnext.show{display:flex; animation:fadein .3s;}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .upnext .kick{font-size:11px; letter-spacing:4px; color:var(--amber); text-transform:uppercase; font-weight:700;}
+  .upnext .t{font-family:Georgia,serif; font-size:24px; margin:10px 0 4px;}
+  .upnext .s{color:var(--muted); font-size:13px; margin-bottom:16px;}
+  .upnext .cdbar{width:220px; height:4px; background:rgba(255,255,255,.12); border-radius:2px; margin:0 auto 18px; overflow:hidden;}
+  .upnext .cdbar i{display:block; height:100%; width:100%; background:var(--amber); transition:width 1s linear;}
+  .btn{
+    display:inline-block; padding:11px 26px; border-radius:999px; font-weight:700; font-size:14px;
+    cursor:pointer; border:none; transition:transform .12s, box-shadow .12s;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn.amber{background:linear-gradient(180deg,var(--amber2),var(--amber)); color:#1c1206; box-shadow:0 6px 20px rgba(232,163,61,.35);}
+  .btn.ghost{background:transparent; color:var(--muted); border:1px solid var(--line2); margin-left:10px;}
+  .btn.ghost:hover{color:var(--text); border-color:var(--amber);}
+
+  .nowplaying{padding:16px 20px; border-top:1px solid var(--line); background:var(--bg2);}
+  .nowplaying .ep{font-size:11px; letter-spacing:3px; color:var(--amber); text-transform:uppercase; font-weight:700;}
+  .nowplaying .title{font-family:Georgia,serif; font-size:22px; margin-top:5px;}
+  .np-controls{display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap;}
+  .chip-btn{
+    background:var(--card); border:1px solid var(--line); color:var(--text);
+    border-radius:999px; padding:7px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .chip-btn:hover{border-color:var(--amber); color:var(--amber2);}
+  .chip-btn.on{background:rgba(232,163,61,.16); border-color:var(--amber); color:var(--amber2);}
+  select.speed{
+    background:var(--card); border:1px solid var(--line); color:var(--text);
+    border-radius:999px; padding:7px 10px; font-size:12.5px; font-weight:600; cursor:pointer; outline:none;
+  }
+  .switch{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); font-weight:600; cursor:pointer; user-select:none;}
+  .switch .tk{width:36px; height:20px; border-radius:999px; background:rgba(255,255,255,.14); position:relative; transition:background .2s;}
+  .switch .tk::after{content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:left .2s;}
+  .switch.on .tk{background:var(--amber);}
+  .switch.on .tk::after{left:18px;}
+  .kbd-hint{font-size:11.5px; color:var(--muted); margin-top:10px;}
+  .kbd-hint kbd{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:4px; padding:1px 6px; font-size:11px; font-family:inherit;}
+
+  /* ---------- sidebar ---------- */
+  .continue{margin-bottom:22px; display:none;}
+  .sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .sec-head h3{font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--amber); margin:0; font-weight:800;}
+  .shuffle{background:none; border:1px solid var(--line2); color:var(--amber2); border-radius:999px; padding:7px 16px; font-size:12.5px; font-weight:700; cursor:pointer;}
+  .shuffle:hover{background:rgba(232,163,61,.12); border-color:var(--amber);}
+  .cw-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; scrollbar-width:thin;}
   .cw-card{
-    flex:0 0 200px; background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:12px; cursor:pointer; transition:transform .15s, border-color .15s;
+    flex:0 0 210px; background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line); border-radius:12px; padding:14px; cursor:pointer;
+    transition:transform .15s, border-color .15s, box-shadow .15s;
   }
-  .cw-card:hover{transform:translateY(-2px); border-color:var(--amber);}
-  .cw-card .t{font-size:13.5px; font-weight:600; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .cw-card:hover{transform:translateY(-3px); border-color:var(--amber); box-shadow:0 10px 24px rgba(0,0,0,.4);}
+  .cw-card .t{font-size:13.5px; font-weight:600; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:36px;}
   .cw-card .p{height:4px; background:rgba(255,255,255,.1); border-radius:2px; overflow:hidden;}
-  .cw-card .p i{display:block; height:100%; background:var(--amber);}
+  .cw-card .p i{display:block; height:100%; background:linear-gradient(90deg,var(--amber),var(--amber2));}
+  .cw-card .m{font-size:11.5px; color:var(--muted); margin-top:8px;}
 
-  .seasons{margin-bottom:14px;}
-  .pills{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;}
+  .pills{display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:6px; scrollbar-width:thin;}
   .pill{
-    flex:0 0 auto; padding:9px 18px; border-radius:999px; cursor:pointer;
+    flex:0 0 auto; padding:9px 16px; border-radius:999px; cursor:pointer;
     background:var(--card); border:1px solid var(--line); color:var(--muted);
-    font-size:14px; font-weight:600;
+    font-size:13.5px; font-weight:700; transition:all .15s;
   }
-  .pill.active{background:var(--amber); border-color:var(--amber); color:#1a1206;}
+  .pill small{font-weight:600; opacity:.7; margin-left:5px;}
+  .pill:hover{border-color:var(--amber); color:var(--text);}
+  .pill.active{background:linear-gradient(180deg,var(--amber2),var(--amber)); border-color:var(--amber); color:#1c1206; box-shadow:0 4px 16px rgba(232,163,61,.3);}
 
   .eplist{
     background:var(--bg2); border:1px solid var(--line); border-radius:14px; overflow:hidden;
-    max-height:720px; overflow-y:auto;
+    max-height:740px; overflow-y:auto; scrollbar-width:thin;
   }
-  @media (max-width:900px){ .eplist{max-height:480px;} }
+  @media (max-width:920px){ .eplist{max-height:520px;} }
   .ep-row{
-    display:flex; align-items:center; gap:12px; padding:12px 16px; cursor:pointer;
+    display:flex; align-items:center; gap:13px; padding:12px 16px; cursor:pointer;
     border-bottom:1px solid rgba(255,255,255,.05); transition:background .12s;
+    animation:rowin .25s;
   }
+  @keyframes rowin{from{opacity:0; transform:translateY(4px);}to{opacity:1; transform:none;}}
   .ep-row:last-child{border-bottom:none;}
   .ep-row:hover{background:rgba(232,163,61,.07);}
-  .ep-row.playing{background:rgba(232,163,61,.13);}
+  .ep-row.playing{background:rgba(232,163,61,.13); box-shadow:inset 3px 0 0 var(--amber);}
   .ep-num{
-    flex:0 0 44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center;
-    background:rgba(232,163,61,.12); color:var(--amber2); font-weight:800; font-size:15px;
+    flex:0 0 46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    background:rgba(232,163,61,.1); color:var(--amber2); font-weight:800; font-size:15px;
+    border:1px solid rgba(232,163,61,.14);
   }
-  .ep-row.playing .ep-num{background:var(--amber); color:#1a1206;}
+  .ep-row.playing .ep-num{background:linear-gradient(180deg,var(--amber2),var(--amber)); color:#1c1206; border-color:transparent;}
   .ep-meta{flex:1; min-width:0;}
   .ep-title{font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ep-sub{font-size:12px; color:var(--muted); margin-top:2px;}
-  .ep-check{color:var(--amber); font-size:16px; flex:0 0 auto; visibility:hidden;}
+  .ep-sub{font-size:12px; color:var(--muted); margin-top:3px;}
+  .ep-prog{height:3px; background:rgba(255,255,255,.08); border-radius:2px; margin-top:6px; overflow:hidden; display:none;}
+  .ep-row.hasprog .ep-prog{display:block;}
+  .ep-prog i{display:block; height:100%; background:var(--amber);}
+  .ep-check{color:var(--amber); font-size:17px; font-weight:800; flex:0 0 auto; visibility:hidden;}
   .ep-row.watched .ep-check{visibility:visible;}
   .ep-row.watched .ep-title{color:var(--muted);}
-  .empty{padding:40px 20px; text-align:center; color:var(--muted);}
-  footer{max-width:1200px; margin:0 auto; padding:0 16px 40px; color:var(--muted); font-size:12.5px; text-align:center;}
-  footer a{color:var(--amber);}
+  .empty{padding:44px 20px; text-align:center; color:var(--muted); line-height:1.7;}
+
+  footer{max-width:1240px; margin:0 auto; padding:0 16px 46px; color:var(--muted); font-size:12.5px; text-align:center; line-height:2;}
+  footer a{color:var(--amber); cursor:pointer; text-decoration:underline;}
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="kicker">NBC &middot; 1957&ndash;1965</div>
+  <div class="kicker">NBC &middot; 1957&ndash;1965 &middot; 8 Seasons</div>
   <h1>WAGON TRAIN</h1>
-  <div class="sub"><b id="count">…</b> episodes &middot; streaming free from the Internet Archive</div>
+  <div class="tagline">“Wagons ho!” — the classic western, streaming free</div>
+  <div class="stats">
+    <div class="stat"><b id="statEps">…</b> episodes</div>
+    <div class="stat"><b>8</b> seasons</div>
+    <div class="stat"><b id="statWatched">0</b> watched</div>
+  </div>
+  <div class="watchbar">
+    <div class="lbl">YOUR JOURNEY WEST</div>
+    <div class="track"><div class="fill" id="watchFill"></div></div>
+  </div>
   <div class="searchbar">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a89880" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-    <input id="search" type="search" placeholder="Search episodes… (e.g. “Borgnine”)" autocomplete="off">
+    <input id="search" type="search" placeholder="Search all 269 episodes…" autocomplete="off">
   </div>
 </header>
 
 <main>
   <div class="layout">
     <div>
-      <div class="player-wrap">
+      <div class="player-wrap" id="playerWrap">
         <video id="player" controls playsinline preload="metadata"></video>
+        <div class="upnext" id="upnext">
+          <div>
+            <div class="kick">Up next</div>
+            <div class="t" id="unTitle">—</div>
+            <div class="s" id="unSub">—</div>
+            <div class="cdbar"><i id="unBar"></i></div>
+            <button class="btn amber" id="unPlay">Play now</button><button class="btn ghost" id="unCancel">Stay here</button>
+          </div>
+        </div>
         <div class="nowplaying">
-          <div class="ep" id="npEp">Pick an episode</div>
-          <div class="title" id="npTitle">The trail starts here, partner 🤠</div>
-          <div class="hint" id="npHint">Choose any episode on the right to start watching. Your spot is saved if you wander off.</div>
+          <div class="ep" id="npEp">Pick an episode to begin</div>
+          <div class="title" id="npTitle">The trail starts here, partner</div>
+          <div class="np-controls">
+            <button class="chip-btn" id="btnShuffle" title="Play a random episode">🎲 Surprise me</button>
+            <button class="chip-btn" id="btnPip" title="Picture in picture">⧉ Pop-out</button>
+            <select class="speed" id="selSpeed" title="Playback speed">
+              <option value="0.5">0.5×</option>
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1× speed</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <label class="switch on" id="swAutoplay" title="Play the next episode automatically">
+              <span class="tk"></span><span>Autoplay</span>
+            </label>
+          </div>
+          <div class="kbd-hint">
+            <kbd>Space</kbd> play/pause &nbsp;·&nbsp; <kbd>←</kbd><kbd>→</kbd> seek 10s &nbsp;·&nbsp; <kbd>F</kbd> fullscreen &nbsp;·&nbsp; <kbd>N</kbd> next episode &nbsp;·&nbsp; <kbd>M</kbd> mute
+          </div>
         </div>
       </div>
     </div>
 
     <div>
       <div class="continue" id="continueBox">
-        <h3>Continue watching</h3>
+        <div class="sec-head"><h3>Continue watching</h3></div>
         <div class="cw-row" id="cwRow"></div>
       </div>
-      <div class="seasons">
-        <h3>Seasons</h3>
-        <div class="pills" id="pills"></div>
-      </div>
+      <div class="sec-head"><h3>Browse seasons</h3></div>
+      <div class="pills" id="pills"></div>
       <div class="eplist" id="eplist"></div>
     </div>
   </div>
 </main>
 
 <footer>
-  Episodes stream free from the Internet Archive's public-domain collection.
-  Wagon Train © its respective rights holders — happy trails.
+  Episodes stream free from the Internet Archive's public-domain collection.<br>
+  <a id="resetProg">Reset my watch progress</a>
 </footer>
 
 <script src="app.js"></script>
