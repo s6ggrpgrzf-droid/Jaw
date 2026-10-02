@@ -276,6 +276,14 @@
               <button class="btn amber" id="unPlay">Play now</button><button class="btn ghost" id="unCancel">Stay here</button>
             </div>
           </div>
+          <div class="upnext" id="vidError" hidden>
+            <div>
+              <div class="kick">Signal lost</div>
+              <div class="t">Couldn't load this episode</div>
+              <div class="s">The video host (Internet Archive) isn't responding right now.<br>Your shows and progress are safe — try again in a bit.</div>
+              <button class="btn amber" id="veRetry">Try again</button>
+            </div>
+          </div>
           <div class="nowplaying">
             <div class="ep" id="npEp">Pick an episode to begin</div>
             <div class="title" id="npTitle">Choose any episode to start watching</div>
@@ -343,6 +351,6 @@
   <a id="resetProg">Reset my watch progress</a>
 </footer>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
