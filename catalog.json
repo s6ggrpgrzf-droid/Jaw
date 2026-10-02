@@ -1,0 +1,52 @@
+[
+ {
+  "sid": "cisco",
+  "title": "The Cisco Kid",
+  "years": "1950\u20131956",
+  "archive": "the-cisco-kid-s-01-e-05-convict-story",
+  "count": 40,
+  "file": "show_cisco.json",
+  "accent": "#d0523c",
+  "blurb": "The Cisco Kid and Pancho right wrongs across the Southwest."
+ },
+ {
+  "sid": "annie",
+  "title": "Annie Oakley",
+  "years": "1954\u20131957",
+  "archive": "annie-oakley-tv-series-episodes",
+  "count": 32,
+  "file": "show_annie.json",
+  "accent": "#5aa9a0",
+  "blurb": "Sharpshooter Annie Oakley keeps the peace, trick-shot style."
+ },
+ {
+  "sid": "rider",
+  "title": "The Range Rider",
+  "years": "1951\u20131953",
+  "archive": "the-range-rider",
+  "count": 27,
+  "file": "show_rider.json",
+  "accent": "#9a7b4f",
+  "blurb": "Jock Mahoney roams the range righting wrongs."
+ },
+ {
+  "sid": "judge",
+  "title": "Judge Roy Bean",
+  "years": "1955\u20131957",
+  "archive": "judge-roy-bean-tv-series",
+  "count": 19,
+  "file": "show_judge.json",
+  "accent": "#6a8fd1",
+  "blurb": "Judge Roy Bean dispenses frontier justice west of the Pecos."
+ },
+ {
+  "sid": "wagon",
+  "title": "Wagon Train",
+  "years": "1957\u20131965",
+  "archive": "wagon-train-s-01-e-101-ep-101-the-willy-moran-story",
+  "count": 269,
+  "file": "show_wagon.json",
+  "accent": "#e8a33d",
+  "blurb": "Ward Bond leads a wagon train from Missouri to California."
+ }
+]
