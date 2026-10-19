@@ -142,10 +142,127 @@
   body.theater .eplist{max-height:420px;}
 
   .player-wrap{
-    position:relative; background:#000; border:1px solid rgba(255,255,255,.12); border-radius:16px; overflow:hidden;
-    box-shadow:0 24px 80px rgba(0,0,0,.6);
+    position:relative; background:transparent; border:none; border-radius:0; overflow:visible;
+    box-shadow:none;
+  }
+  /* ============ 70s wooden console TV ============ */
+  .tv-scene{perspective:1500px; padding:30px 14px 6px;}
+  .tv-cabinet{position:relative; transform:rotateX(6deg); transform-origin:50% 100%;
+    border-radius:14px; padding:0;
+    background:
+      linear-gradient(180deg, rgba(255,226,180,.10), rgba(255,226,180,0) 24%),
+      repeating-linear-gradient(92deg, rgba(20,10,4,.13) 0 2px, rgba(255,214,160,.05) 2px 4px, transparent 4px 13px),
+      repeating-linear-gradient(89deg, transparent 0 90px, rgba(0,0,0,.10) 90px 93px, transparent 93px 190px),
+      linear-gradient(180deg,#7c5a38 0%,#654727 45%,#4a2f1b 100%);
+    box-shadow:0 44px 90px rgba(0,0,0,.65), 0 10px 26px rgba(0,0,0,.5),
+      inset 0 2px 0 rgba(255,220,170,.28), inset 0 -4px 10px rgba(0,0,0,.45),
+      inset 2px 0 0 rgba(255,220,170,.10), inset -2px 0 0 rgba(0,0,0,.35);
+  }
+  .tv-lid{position:absolute; left:10px; right:10px; top:1px; height:46px; z-index:0;
+    transform:rotateX(64deg); transform-origin:50% 0;
+    background:linear-gradient(180deg,#8f6c46 0%,#6f4e2d 100%);
+    border-radius:10px 10px 0 0;
+    box-shadow:inset 0 2px 0 rgba(255,226,180,.30);
+  }
+  .tv-front{position:relative; z-index:1; padding:30px 28px 20px;}
+  .tv-mains{display:flex; gap:24px; align-items:stretch;}
+  .tv-screen{flex:1 1 auto; min-width:0;}
+  .tv-tube{position:relative; border-radius:26px; padding:13px;
+    background:
+      repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px),
+      linear-gradient(165deg,#4a4a52 0%,#2b2b31 40%,#17171b 100%);
+    box-shadow:inset 0 2px 3px rgba(255,255,255,.22), inset 0 -3px 8px rgba(0,0,0,.75),
+      0 3px 10px rgba(0,0,0,.55);
+  }
+  .tv-view{position:relative; border-radius:15px; overflow:hidden; background:#000;
+    box-shadow:inset 0 0 60px rgba(0,0,0,.85);
   }
   video{width:100%; aspect-ratio:16/9; display:block; background:#000;}
+  .tv-glass{position:absolute; inset:0; z-index:4; pointer-events:none; border-radius:15px;
+    background:
+      radial-gradient(115% 85% at 20% 6%, rgba(255,255,255,.13), rgba(255,255,255,0) 44%),
+      radial-gradient(145% 125% at 50% 52%, transparent 60%, rgba(0,0,0,.46) 100%);
+  }
+  .tv-glass::after{content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(180deg, rgba(255,255,255,.045) 0 1px, transparent 1px 4px);}
+  /* CRT power on/off */
+  .tv-tube.crt-off{animation:crtOff .48s ease-in forwards;}
+  .tv-tube.crt-on{animation:crtOn .42s ease-out;}
+  @keyframes crtOff{
+    0%{transform:scale(1,1); filter:brightness(1);}
+    45%{transform:scale(1,.004); filter:brightness(2.8);}
+    72%{transform:scale(.03,.004); filter:brightness(3.6);}
+    100%{transform:scale(0,0); filter:brightness(4);}
+  }
+  @keyframes crtOn{
+    0%{transform:scale(0,0); filter:brightness(4);}
+    55%{transform:scale(1,.004); filter:brightness(2.8);}
+    100%{transform:scale(1,1); filter:brightness(1);}
+  }
+  /* side column: control panel + speaker grille */
+  .tv-side{flex:0 0 196px; display:flex; flex-direction:column; gap:16px;}
+  .tv-panel{background:linear-gradient(180deg,#1d1d21,#0f0f12); border-radius:12px; padding:16px 12px 14px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.13), inset 0 -3px 8px rgba(0,0,0,.75), 0 3px 8px rgba(0,0,0,.5);
+    display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .ch-win{background:#0b0704; border-radius:7px; padding:7px 18px 5px; min-width:64px; text-align:center;
+    box-shadow:inset 0 3px 10px #000, inset 0 -1px 0 rgba(255,180,90,.15);
+    font-family:"Courier New",monospace; font-weight:700; font-size:22px; letter-spacing:3px; color:#ffb347;
+    text-shadow:0 0 8px rgba(255,179,71,.85);}
+  .knob-row{display:flex; gap:18px;}
+  .knob-unit{display:flex; flex-direction:column; align-items:center; gap:7px;}
+  .knob-unit label{font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase; color:#9a8a76; font-weight:700;}
+  .knob{width:62px; height:62px; border-radius:50%; border:none; cursor:pointer; position:relative; padding:0;
+    background:radial-gradient(circle at 34% 28%, #77777f, #3d3d45 52%, #1a1a1f 100%);
+    box-shadow:0 5px 12px rgba(0,0,0,.65), inset 0 2px 3px rgba(255,255,255,.28), inset 0 -4px 8px rgba(0,0,0,.65);
+    transition:transform .1s;}
+  .knob:active{transform:scale(.94);}
+  .knob .ptr{position:absolute; inset:0; display:block; transition:transform .22s cubic-bezier(.3,1.4,.5,1);}
+  .knob .ptr::before{content:""; position:absolute; left:50%; top:7px; width:5px; height:17px; margin-left:-2.5px;
+    border-radius:3px; background:linear-gradient(180deg,#ffd9a0,#e8a33d);
+    box-shadow:0 0 6px rgba(232,163,61,.9);}
+  .knob .ptr::after{content:""; position:absolute; inset:9px; border-radius:50%;
+    background:radial-gradient(circle at 40% 32%, #55555e, #26262c 70%);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.6);}
+  .power{display:flex; align-items:center; gap:9px; cursor:pointer;
+    background:linear-gradient(180deg,#3a3a41,#232327); color:#cfc4b2;
+    border:1px solid rgba(255,255,255,.10); border-radius:9px; padding:9px 18px;
+    font-size:10.5px; letter-spacing:2.5px; text-transform:uppercase; font-weight:800;
+    box-shadow:0 3px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.14);}
+  .power:active{transform:translateY(1px);}
+  .power .led{width:9px; height:9px; border-radius:50%; background:#7dff9a;
+    box-shadow:0 0 8px rgba(125,255,154,.95), inset 0 -1px 2px rgba(0,0,0,.4);}
+  .power.off .led{background:#5a2b22; box-shadow:inset 0 1px 2px rgba(0,0,0,.6);}
+  .tv-grille{flex:1; min-height:130px; border-radius:10px;
+    background:
+      repeating-linear-gradient(90deg, #241408 0 9px, #6f4a28 9px 17px, #8a5f36 17px 19px, #241408 19px 22px),
+      linear-gradient(180deg,#5a3d24,#3a2515);
+    box-shadow:inset 0 4px 12px rgba(0,0,0,.75), inset 0 -2px 5px rgba(255,220,170,.10), 0 2px 5px rgba(0,0,0,.45);}
+  .tv-carve{margin-top:20px; height:46px; border-radius:9px; position:relative;
+    background:linear-gradient(180deg,#654830,#402a17);
+    box-shadow:inset 0 3px 7px rgba(0,0,0,.6), inset 0 -2px 0 rgba(255,220,170,.14), 0 2px 4px rgba(0,0,0,.4);}
+  .tv-carve::before{content:""; position:absolute; inset:11px 26px; border-radius:6px;
+    border:2px solid rgba(0,0,0,.32);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,220,170,.16);}
+  .tv-carve::after{content:"❦"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:rgba(0,0,0,.40); font-size:20px; text-shadow:0 1px 0 rgba(255,220,170,.14);}
+  .tv-plinth{height:24px; margin:0 30px; border-radius:0 0 12px 12px;
+    background:linear-gradient(180deg,#38220f,#201307);
+    box-shadow:0 18px 34px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,220,170,.12);}
+  .tv-scene::after{content:""; display:block; height:26px; margin:6px 40px 0;
+    background:radial-gradient(50% 100% at 50% 0, rgba(0,0,0,.5), transparent 70%);}
+  @media (max-width:640px){
+    .tv-mains{flex-direction:column;}
+    .tv-side{flex:none;}
+    .tv-panel{flex-direction:row; justify-content:space-around; align-items:center; padding:12px 10px;}
+    .knob-row{gap:14px;}
+    .tv-grille{min-height:74px;}
+    .knob{width:54px; height:54px;}
+    .tv-front{padding:22px 16px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tv-tube.crt-off,.tv-tube.crt-on{animation-duration:.01s;}
+    .knob .ptr{transition:none;}
+  }
   .upnext{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(5,3,2,.84); backdrop-filter:blur(4px); z-index:5; text-align:center; padding:20px;}
   .upnext.show{display:flex; animation:fadein .3s;}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -266,7 +383,16 @@
     <div class="layout">
       <div class="player-col">
         <div class="player-wrap" id="playerWrap">
-          <video id="player" controls playsinline preload="metadata" crossorigin="anonymous"></video>
+          <div class="tv-scene">
+            <div class="tv-cabinet" id="tvCabinet">
+              <div class="tv-lid" aria-hidden="true"></div>
+              <div class="tv-front">
+                <div class="tv-mains">
+                  <div class="tv-screen">
+                    <div class="tv-tube" id="tvTube">
+                      <div class="tv-view">
+                        <video id="player" controls playsinline preload="metadata" crossorigin="anonymous"></video>
+                        <div class="tv-glass" aria-hidden="true"></div>
           <div class="upnext" id="upnext">
             <div>
               <div class="kick">Up next</div>
@@ -284,6 +410,32 @@
               <button class="btn amber" id="veRetry">Try again</button>
             </div>
           </div>
+                      </div><!-- /tv-view -->
+                    </div><!-- /tv-tube -->
+                  </div><!-- /tv-screen -->
+                  <div class="tv-side">
+                    <div class="tv-panel">
+                      <div class="ch-win"><span id="chNum">2</span></div>
+                      <div class="knob-row">
+                        <div class="knob-unit">
+                          <button class="knob" id="knobCh" aria-label="Change channel"><span class="ptr" id="chPtr"></span></button>
+                          <label>Channel</label>
+                        </div>
+                        <div class="knob-unit">
+                          <button class="knob" id="knobVol" aria-label="Volume (drag or tap to mute)"><span class="ptr" id="volPtr"></span></button>
+                          <label>Volume</label>
+                        </div>
+                      </div>
+                      <button class="power on" id="btnPower" aria-label="Power"><span class="led"></span>Power</button>
+                    </div>
+                    <div class="tv-grille" aria-hidden="true"></div>
+                  </div>
+                </div><!-- /tv-mains -->
+                <div class="tv-carve" aria-hidden="true"></div>
+              </div><!-- /tv-front -->
+              <div class="tv-plinth" aria-hidden="true"></div>
+            </div><!-- /tv-cabinet -->
+          </div><!-- /tv-scene -->
           <div class="nowplaying">
             <div class="ep" id="npEp">Pick an episode to begin</div>
             <div class="title" id="npTitle">Choose any episode to start watching</div>
@@ -351,6 +503,6 @@
   <a id="resetProg">Reset my watch progress</a>
 </footer>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

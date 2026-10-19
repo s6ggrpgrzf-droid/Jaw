@@ -633,6 +633,109 @@
   }
   window.addEventListener("hashchange", render);
 
+  /* ---------- wooden console TV: channel + volume knobs, power, CRT ---------- */
+  (function tvSet() {
+    var tube = $("tvTube"), chKnob = $("knobCh"), volKnob = $("knobVol"),
+        chPtr = $("chPtr"), volPtr = $("volPtr"), chNum = $("chNum"), pow = $("btnPower");
+    if (!tube || !chKnob) return;
+
+    /* tiny speaker: knob detents + power thunk */
+    var AC = null;
+    function ac() {
+      if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+      if (AC && AC.state === "suspended") AC.resume();
+      return AC;
+    }
+    function blip(freq, dur, type, gain) {
+      var a = ac(); if (!a) return;
+      var o = a.createOscillator(), g = a.createGain();
+      o.type = type || "square"; o.frequency.value = freq;
+      g.gain.setValueAtTime(gain || 0.06, a.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(); o.stop(a.currentTime + dur + 0.02);
+    }
+    function thunk() {
+      var a = ac(); if (!a) return;
+      var o = a.createOscillator(), g = a.createGain();
+      o.type = "sine"; o.frequency.setValueAtTime(120, a.currentTime);
+      o.frequency.exponentialRampToValueAtTime(38, a.currentTime + 0.16);
+      g.gain.setValueAtTime(0.22, a.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.2);
+      o.connect(g); g.connect(a.destination);
+      o.start(); o.stop(a.currentTime + 0.22);
+    }
+
+    /* channel knob: click = next show, knob turns with a detent */
+    var chAngle = 0;
+    function curIdx() {
+      for (var i = 0; i < catalog.length; i++) if (catalog[i].sid === route.sid) return i;
+      return 0;
+    }
+    function paintCh() { chNum.textContent = String(curIdx() + 2); }
+    chKnob.addEventListener("click", function () {
+      chAngle += 42; chPtr.style.transform = "rotate(" + chAngle + "deg)";
+      blip(1900, 0.05, "square", 0.05);
+      setTimeout(function () { blip(1350, 0.06, "square", 0.04); }, 55);
+      var next = catalog[(curIdx() + 1) % catalog.length];
+      if (!next) return;
+      var sh = showCache[next.sid];
+      paintChSoon(next.sid);
+      if (sh && sh.episodes && sh.episodes.length) openShowAndPlay(next.sid, sh.episodes[0]);
+      else location.hash = "#/" + next.sid;
+    });
+    function paintChSoon(sid) {
+      setTimeout(function () {
+        for (var i = 0; i < catalog.length; i++)
+          if (catalog[i].sid === sid) { chNum.textContent = String(i + 2); break; }
+      }, 60);
+    }
+    window.addEventListener("hashchange", paintCh);
+
+    /* volume knob: drag vertically; tap = mute toggle */
+    function paintVol() {
+      var v = player.muted ? 0 : player.volume;
+      volPtr.style.transform = "rotate(" + (-135 + v * 270) + "deg)";
+    }
+    paintVol();
+    volKnob.addEventListener("pointerdown", function (e) {
+      volKnob.setPointerCapture(e.pointerId);
+      var y0 = e.clientY, v0 = player.muted ? 0 : player.volume, moved = 0;
+      blip(900, 0.04, "sine", 0.03);
+      function mv(ev) {
+        moved = Math.max(moved, Math.abs(ev.clientY - y0));
+        var v = Math.min(1, Math.max(0, v0 + (y0 - ev.clientY) / 170));
+        player.volume = v; player.muted = false; paintVol();
+      }
+      function up() {
+        volKnob.removeEventListener("pointermove", mv);
+        volKnob.removeEventListener("pointerup", up);
+        volKnob.removeEventListener("pointercancel", up);
+        if (moved < 8) { player.muted = !player.muted; blip(player.muted ? 500 : 1000, 0.06, "sine", 0.05); paintVol(); }
+      }
+      volKnob.addEventListener("pointermove", mv);
+      volKnob.addEventListener("pointerup", up);
+      volKnob.addEventListener("pointercancel", up);
+    });
+    player.addEventListener("volumechange", paintVol);
+
+    /* power: the full CRT collapse */
+    var on = true;
+    pow.addEventListener("click", function () {
+      thunk();
+      if (on) {
+        player.pause();
+        tube.classList.remove("crt-on"); tube.classList.add("crt-off");
+        pow.classList.remove("on"); pow.classList.add("off");
+      } else {
+        tube.classList.remove("crt-off"); tube.classList.add("crt-on");
+        pow.classList.add("on"); pow.classList.remove("off");
+        player.play().catch(function () {});
+      }
+      on = !on;
+    });
+  })();
+
   /* ---------- init ---------- */
   loadStore();
   swAutoplay.classList.toggle("on", store.autoplay);
